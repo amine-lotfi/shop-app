@@ -1,17 +1,25 @@
-import { View, Text, StyleSheet, StatusBar, Image } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  StatusBar,
+  Image,
+  ProgressBarAndr,
+  ActivityIndicator,
+} from "react-native";
 import React, { useEffect } from "react";
 import { AppColors } from "./../Utilities/AppColors";
 import { useNavigation } from "@react-navigation/native";
-const AppLogo = require("./../assets/adaptive-icon.png");
+const AppLogo = require("./../assets/logo.png");
 
 const SplashScreen = () => {
   const navigation = useNavigation();
 
-  useEffect(() => {
-    setTimeout(() => {
-      navigation.replace("Signup");
-    }, 3000);
-  }, []);
+   useEffect(() => {
+     setTimeout(() => {
+       navigation.replace("Signup");
+     }, 4000);
+   }, []);
 
   return (
     <View style={styles.container}>
@@ -23,6 +31,12 @@ const SplashScreen = () => {
           <Text style={styles.logoUnderText}>Happy Shopping! </Text>
         </View>
       </View>
+      <ActivityIndicator
+        size="50"
+        color={AppColors.secondary}
+        animating={true}
+        style={{marginTop: 30}}
+      />
     </View>
   );
 };
