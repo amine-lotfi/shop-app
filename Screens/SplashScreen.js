@@ -8,18 +8,18 @@ import {
   ActivityIndicator,
 } from "react-native";
 import React, { useEffect } from "react";
-import { AppColors } from "./../Utilities/AppColors";
+import { AppColors } from "../utilities/AppColors";
 import { useNavigation } from "@react-navigation/native";
 const AppLogo = require("./../assets/logo.png");
 
 const SplashScreen = () => {
   const navigation = useNavigation();
 
-   useEffect(() => {
-     setTimeout(() => {
-       navigation.replace("Signup");
-     }, 4000);
-   }, []);
+  useEffect(() => {
+    setTimeout(() => {
+      navigation.replace("Signup");
+    }, 4000);
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -35,7 +35,7 @@ const SplashScreen = () => {
         size="50"
         color={AppColors.secondary}
         animating={true}
-        style={{marginTop: 30}}
+        style={{ marginTop: 30 }}
       />
     </View>
   );

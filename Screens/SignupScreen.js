@@ -8,15 +8,45 @@ import {
   TextInput,
   Pressable,
   TouchableOpacity,
+  Alert,
 } from "react-native";
 import React, { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { AppColors } from "./../Utilities/AppColors";
+import { AppColors } from "../utilities/AppColors";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useNavigation } from "@react-navigation/native";
+import { authentification } from "./../FirebaseConfig";
+import { createUserWithEmailAndPassword } from "firebase/auth";
 
 const SignupScreen = () => {
   const [isPasswordVisible, setIsPasswordVisible] = useState(true);
+
+  // We use UseState hook here to store the user credentials
+  const [userCredentials, setUserCredentials] = useState({
+    email: "",
+    password: "",
+  });
+
+  const { email, password } = userCredentials;
+
+  // Sign up method - We're using Firebase to Authentificate the users
+  const signUp = () => {
+    createUserWithEmailAndPassword(authentification, email, password)
+      .then(() => {
+        Alert.alert("User account created & signed in!");
+      })
+      .catch((error) => {
+        if (error.code === "auth/email-already-in-use") {
+          Alert.alert("That email address is already in use!");
+        }
+
+        if (error.code === "auth/invalid-email") {
+          Alert.alert("That email address is invalid!");
+        }
+
+        console.error(error);
+      });
+  };
 
   const navigation = useNavigation();
 
@@ -47,13 +77,24 @@ const SignupScreen = () => {
 
         <View style={styles.emailContainer}>
           <Text style={styles.label}>Email</Text>
-          <TextInput style={styles.input} keyboardType="email-address" />
+          <TextInput
+            value={email}
+            onChangeText={(val) => {
+              setUserCredentials({ ...userCredentials, email: val });
+            }}
+            style={styles.input}
+            keyboardType="email-address"
+          />
         </View>
 
         <View style={styles.passwordContainer}>
           <Text style={styles.label}>Password</Text>
           <View style={styles.passwordHideShowContainer}>
             <TextInput
+              value={password}
+              onChangeText={(val) => {
+                setUserCredentials({ ...userCredentials, password: val });
+              }}
               style={styles.inputPassword}
               keyboardType="accii-capable"
               secureTextEntry={isPasswordVisible}
@@ -90,9 +131,7 @@ const SignupScreen = () => {
         <TouchableOpacity
           style={styles.signupButton}
           activeOpacity={0.5}
-          onPress={() => {
-            navigation.replace("Login");
-          }}
+          onPress={signUp}
         >
           <Text style={styles.signupButtonText}>Sign Up </Text>
         </TouchableOpacity>
@@ -116,7 +155,6 @@ export default SignupScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginTop: StatusBar.currentHeight,
     backgroundColor: AppColors.secondary,
   },
   scrollView: {
@@ -126,7 +164,7 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
     alignSelf: "center",
-    marginTop: 10,
+    marginTop: 40,
   },
   signupContainer: {
     paddingHorizontal: 20,
