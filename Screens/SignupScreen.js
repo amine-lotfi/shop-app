@@ -15,25 +15,35 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { AppColors } from "../utilities/AppColors";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useNavigation } from "@react-navigation/native";
-import { authentification } from "./../FirebaseConfig";
+import { authentification, database } from "./../FirebaseConfig";
 import { createUserWithEmailAndPassword } from "firebase/auth";
+import { doc, setDoc } from "firebase/firestore";
+import uuid from "react-native-uuid";
 
 const SignupScreen = () => {
   const [isPasswordVisible, setIsPasswordVisible] = useState(true);
 
   // We use UseState hook here to store the user credentials
   const [userCredentials, setUserCredentials] = useState({
+    username: "",
     email: "",
     password: "",
   });
 
-  const { email, password } = userCredentials;
+  const { email, password, username } = userCredentials;
 
-  // Sign up method - We're using Firebase to Authentificate the users
+  const uid = uuid.v4();
+
+  // Sign up method - We're using Firebase to authentificate the users
   const signUp = () => {
     createUserWithEmailAndPassword(authentification, email, password)
       .then(() => {
-        Alert.alert("User account created & signed in!");
+        navigation.replace("Login");
+        setDoc(doc(database, "users", uid), {
+          username: username,
+          email: email,
+          id: authentification.currentUser.uid,
+        });
       })
       .catch((error) => {
         if (error.code === "auth/email-already-in-use") {
@@ -69,6 +79,10 @@ const SignupScreen = () => {
         <View style={styles.usernameContainer}>
           <Text style={styles.label}>Username</Text>
           <TextInput
+            value={username}
+            onChangeText={(val) => {
+              setUserCredentials({ ...userCredentials, username: val });
+            }}
             style={styles.input}
             keyboardType="name-phone-pad"
             maxLength={12}
@@ -133,13 +147,13 @@ const SignupScreen = () => {
           activeOpacity={0.5}
           onPress={signUp}
         >
-          <Text style={styles.signupButtonText}>Sign Up </Text>
+          <Text style={styles.signupButtonText}>Sign up </Text>
         </TouchableOpacity>
 
         <View style={styles.signinContainer}>
           <Text>Already have an account? </Text>
           <Text
-            onPress={() => alert("Sign in pressed!")}
+            onPress={() => navigation.replace("Login")}
             style={{ color: AppColors.primary }}
           >
             Sign in{" "}
